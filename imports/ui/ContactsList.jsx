@@ -5,8 +5,13 @@ import {ContactsCollection} from "../api/ContactsCollection";
 export const ContactsList = () => {
 
     const contacts = useTracker(() => {
-        return ContactsCollection.find({}).fetch();
+        return ContactsCollection.find({}, {sort: {createdAt: -1}}).fetch();
     })
+
+    const removeContact = (e, _id) => {
+        e.preventDefault();
+        Meteor.call("contacts.remove", {contactId: _id});
+    }
 
     return (
         <div>
@@ -16,7 +21,7 @@ export const ContactsList = () => {
                 </h3>
             </div>
             <ul role="list" className="mt-4 border-t border-b border-gray-200 divide-y divide-gray-200">
-                {contacts.map(({name, email, imageUrl}, idx) => (
+                {contacts.map(({_id, name, email, imageUrl}, idx) => (
                     <li key={idx} className="min-w-0 flex-1 flex items-center space-x-3">
                         <div className="min-w-0 flex-1 flex items-center space-x-3">
                             <div className="flex-shrink-0">
@@ -25,6 +30,15 @@ export const ContactsList = () => {
                             <div className="min-w-0 flex-1">
                                 <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
                                 <p className="text-sm font-medium text-gray-900 truncate">{email}</p>
+                            </div>
+                            <div>
+                                <a
+                                    href="#"
+                                    onClick={e => removeContact(e, _id)}
+                                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                >
+                                    Remove
+                                </a>
                             </div>
                         </div>
                     </li>
